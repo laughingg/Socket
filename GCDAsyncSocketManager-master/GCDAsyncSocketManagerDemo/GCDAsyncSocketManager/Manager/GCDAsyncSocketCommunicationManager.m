@@ -52,7 +52,7 @@ static NSUInteger PROTOCOL_VERSION = 7;
         return nil;
     }
 
-    // 创建单利
+    // 创建 sccket 单利
     self.socketManager = [GCDAsyncSocketManager sharedInstance];
     
     // 请求池
@@ -65,22 +65,39 @@ static NSUInteger PROTOCOL_VERSION = 7;
 }
 
 #pragma mark - socket actions
-
+// 根据配置来创建 socket
 - (void)createSocketWithConfig:(nonnull GACConnectConfig *)config {
+    
+    /*
+     令牌为空的时候，直接返回
+     通道为空的时候，直接返回
+     主机为空的时候，直接返回
+     */
     if (!config.token.length || !config.channels.length || !config.host.length) {
         return;
     }
     
     self.connectConfig = config;
+    
+    // 身份验证
     self.socketAuthAppraisalChannel = config.channels;
+    
     [GCKeyChainManager sharedInstance].token = config.token;
+    
     [self.socketManager changeHost:config.host port:config.port];
+    
+    // 协议版本
     PROTOCOL_VERSION = config.socketVersion;
     
-    [self.socketManager connectSocketWithDelegate:self];
+    [self.socketManager connectSocketWithDelegate: self];
 }
 
+
+// 根据令牌和通道来创建 socket
 - (void)createSocketWithToken:(nonnull NSString *)token channel:(nonnull NSString *)channel {
+    
+    // 令牌为空， 直接返回
+    // 通道为空， 直接返回
     if (!token || !channel) {
         return;
     }
@@ -92,6 +109,8 @@ static NSUInteger PROTOCOL_VERSION = 7;
     [self.socketManager connectSocketWithDelegate:self];
 }
 
+
+// 断开连接
 - (void)disconnectSocket {
     [self.socketManager disconnectSocket];
 }
@@ -99,6 +118,7 @@ static NSUInteger PROTOCOL_VERSION = 7;
 - (void)socketWriteDataWithRequestType:(GACRequestType)type
                            requestBody:(nonnull NSDictionary *)body
                             completion:(nullable SocketDidReadBlock)callback {
+    
     if (self.socketManager.connectStatus == -1) {
         NSLog(@"socket 未连通");
         if (callback) {
@@ -124,9 +144,13 @@ static NSUInteger PROTOCOL_VERSION = 7;
     [self.socketManager socketWriteData:requestBody];
 }
 
-#pragma mark - GCDAsyncSocketDelegate
 
+
+
+#pragma mark - GCDAsyncSocketDelegate
+// 连接到端口和主机
 - (void)socket:(GCDAsyncSocket *)socket didConnectToHost:(NSString *)host port:(UInt16)port {
+    
     GACSocketModel *socketModel = [[GACSocketModel alloc] init];
     socketModel.version = PROTOCOL_VERSION;
     socketModel.reqType = GACRequestType_ConnectionAuthAppraisal;
@@ -137,12 +161,14 @@ static NSUInteger PROTOCOL_VERSION = 7;
     @{ @"token": [GCKeyChainManager sharedInstance].token ?: @"",
        @"endpoint": @"ios" };
     
+    // 发送数据给服务器
     [self.socketManager socketWriteData:[socketModel socketModelToJSONString]];
     
     NSLog(@"socket:%p didConnectToHost:%@ port:%hu", socket, host, port);
     NSLog(@"Cool, I'm connected! That was easy.");
 }
 
+// 失去连接
 - (void)socketDidDisconnect:(GCDAsyncSocket *)socket withError:(NSError *)err {
     GACSocketModel *socketModel = [[GACSocketModel alloc] init];
     socketModel.version = PROTOCOL_VERSION;
@@ -161,6 +187,8 @@ static NSUInteger PROTOCOL_VERSION = 7;
     NSLog(@"socketDidDisconnect:%p withError: %@", socket, err);
 }
 
+
+// 已经接收到数据
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag {
     NSString *jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\r\n" withString:@""];

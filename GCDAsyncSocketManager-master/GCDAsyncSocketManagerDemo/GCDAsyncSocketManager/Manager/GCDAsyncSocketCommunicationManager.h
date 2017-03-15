@@ -4,7 +4,9 @@
 //
 //  Created by Broccoli on 16/4/11.
 //  Copyright © 2016年 宫城. All rights reserved.
-//
+/*
+    沟通 管理者
+ */
 
 #import <Foundation/Foundation.h>
 #import "GACConnectConfig.h"

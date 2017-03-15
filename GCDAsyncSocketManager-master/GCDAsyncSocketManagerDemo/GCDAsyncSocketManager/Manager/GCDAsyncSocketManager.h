@@ -16,6 +16,7 @@
 @property (nonatomic, assign) NSInteger connectStatus;
 @property (nonatomic, assign) NSInteger reconnectionCount;  // 建连失败重连次数
 
+
 /**
  *  获取单例
  *
