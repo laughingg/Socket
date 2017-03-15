@@ -14,7 +14,7 @@
 #import <dispatch/dispatch.h>
 #import <Availability.h>
 
-#include <sys/socket.h> // AF_INET, AF_INET6
+#include <sys/socket.h>             // AF_INET, AF_INET6
 
 @class GCDAsyncReadPacket;
 @class GCDAsyncWritePacket;
@@ -100,6 +100,10 @@ typedef NS_ENUM(NSInteger, GCDAsyncSocketError) {
 - (instancetype)initWithDelegate:(nullable id<GCDAsyncSocketDelegate>)aDelegate delegateQueue:(nullable dispatch_queue_t)dq;
 - (instancetype)initWithDelegate:(nullable id<GCDAsyncSocketDelegate>)aDelegate delegateQueue:(nullable dispatch_queue_t)dq socketQueue:(nullable dispatch_queue_t)sq;
 
+
+
+
+
 #pragma mark Configuration -- 配置
 
 @property (atomic, weak, readwrite, nullable) id<GCDAsyncSocketDelegate> delegate;
@@ -108,22 +112,35 @@ typedef NS_ENUM(NSInteger, GCDAsyncSocketError) {
 #else
 @property (atomic, assign, readwrite, nullable) dispatch_queue_t delegateQueue;
 #endif
+
 // 获取代理 和 代理队列
-- (void)getDelegate:(id<GCDAsyncSocketDelegate> __nullable * __nullable)delegatePtr delegateQueue:(dispatch_queue_t __nullable * __nullable)delegateQueuePtr;
+- (void)getDelegate:(id<GCDAsyncSocketDelegate> __nullable * __nullable)delegatePtr
+      delegateQueue:(dispatch_queue_t __nullable * __nullable)delegateQueuePtr;
+
+
 // 设置代理和代理队列
-- (void)setDelegate:(nullable id<GCDAsyncSocketDelegate>)delegate delegateQueue:(nullable dispatch_queue_t)delegateQueue;
+- (void)setDelegate:(nullable id<GCDAsyncSocketDelegate>)delegate
+      delegateQueue:(nullable dispatch_queue_t)delegateQueue;
+
+
 
 /**
  * If you are setting the delegate to nil within the delegate's dealloc method,
  * you may need to use the synchronous versions below.
  * 如果你需要在在 代理的 dealloc 方法中设置 delegate 为nil. 那么你需要使用这个版本的方法进行设置。
 **/
+
 // 同步设置代理
 - (void)synchronouslySetDelegate:(nullable id<GCDAsyncSocketDelegate>)delegate;
 // 同步设置代理队列
 - (void)synchronouslySetDelegateQueue:(nullable dispatch_queue_t)delegateQueue;
+
 // 同步设置代理和代理队列
 - (void)synchronouslySetDelegate:(nullable id<GCDAsyncSocketDelegate>)delegate delegateQueue:(nullable dispatch_queue_t)delegateQueue;
+
+
+
+
 
 /**
  * By default, both IPv4 and IPv6 are enabled.  
@@ -160,6 +177,10 @@ typedef NS_ENUM(NSInteger, GCDAsyncSocketError) {
 **/
 @property (atomic, strong, readwrite, nullable) id userData;
 
+
+
+
+
 #pragma mark Accepting   -- 接受连接
 
 /**
@@ -173,6 +194,7 @@ typedef NS_ENUM(NSInteger, GCDAsyncSocketError) {
  * socket 将要监听所有可能的接口
 **/
 - (BOOL)acceptOnPort:(uint16_t)port error:(NSError **)errPtr;
+
 
 /**
  * This method is the same as acceptOnPort:error: with the
@@ -200,6 +222,9 @@ typedef NS_ENUM(NSInteger, GCDAsyncSocketError) {
 **/
 - (BOOL)acceptOnInterface:(nullable NSString *)interface port:(uint16_t)port error:(NSError **)errPtr;
 
+
+
+
 /**
  * Tells the socket to begin listening and accepting connections on the unix domain at the given url.
  * When a connection is accepted, a new instance of GCDAsyncSocket will be spawned to handle it,
@@ -210,6 +235,10 @@ typedef NS_ENUM(NSInteger, GCDAsyncSocketError) {
  * The socket will listen on all available interfaces (e.g. wifi, ethernet, etc)
  **/
 - (BOOL)acceptOnUrl:(NSURL *)url error:(NSError **)errPtr;
+
+
+
+
 
 #pragma mark Connecting  --  发起连接
 
@@ -222,7 +251,9 @@ typedef NS_ENUM(NSInteger, GCDAsyncSocketError) {
  * and uses the default interface, and no timeout.
  * 这个方法触发 connectToHost:onPort:viaInterface:withTimeout:error: ，并 使用 默认的 接口 和 0 超时
 **/
-- (BOOL)connectToHost:(NSString *)host onPort:(uint16_t)port error:(NSError **)errPtr;
+- (BOOL)connectToHost:(NSString *)host
+               onPort:(uint16_t)port
+                error:(NSError **)errPtr;
 
 /**
  * Connects to the given host and port with an optional timeout.
@@ -289,13 +320,16 @@ typedef NS_ENUM(NSInteger, GCDAsyncSocketError) {
  * 
  * This method invokes connectToAdd
 **/
-- (BOOL)connectToAddress:(NSData *)remoteAddr error:(NSError **)errPtr;
+- (BOOL)connectToAddress:(NSData *)remoteAddr
+                   error:(NSError **)errPtr;
 
 /**
  * This method is the same as connectToAddress:error: with an additional timeout option.
  * To not time out use a negative time interval, or simply use the connectToAddress:error: method.
 **/
-- (BOOL)connectToAddress:(NSData *)remoteAddr withTimeout:(NSTimeInterval)timeout error:(NSError **)errPtr;
+- (BOOL)connectToAddress:(NSData *)remoteAddr
+             withTimeout:(NSTimeInterval)timeout
+                   error:(NSError **)errPtr;
 
 /**
  * Connects to the given address, using the specified interface and timeout.
@@ -398,6 +432,8 @@ typedef NS_ENUM(NSInteger, GCDAsyncSocketError) {
 @property (atomic, readonly) BOOL isDisconnected;
 @property (atomic, readonly) BOOL isConnected;
 
+
+
 /**
  * Returns the local or remote host and port to which this socket is connected, or nil and 0 if not connected.
  * The host will be an IP address.
@@ -435,27 +471,47 @@ typedef NS_ENUM(NSInteger, GCDAsyncSocketError) {
 **/
 @property (atomic, readonly) BOOL isSecure;
 
+
+
+
 #pragma mark Reading  --- 读
 
 // The readData and writeData methods won't block (they are asynchronous).
-// 
+// 读数据和写数据的方法是不会被阻塞，(他们是异步的)
+//
 // When a read is complete the socket:didReadData:withTag: delegate method is dispatched on the delegateQueue.
+// 当读操作完成的时候，在代理回调队列里调用 socket:didReadData:withTag:  方法
+//
 // When a write is complete the socket:didWriteDataWithTag: delegate method is dispatched on the delegateQueue.
-// 
+// 当写操作完成的时候， 在代理回调队列里调用 socket:didWriteDataWithTag:  方法
+//
 // You may optionally set a timeout for any read/write operation. (To not timeout, use a negative time interval.)
+// 你可以选择为任何的读写操作设置超时，（不需要超时时，请使用 负数时间 -1）
+//
 // If a read/write opertion times out, the corresponding "socket:shouldTimeout..." delegate method
 // is called to optionally allow you to extend the timeout.
+// 如果读操作和写操作超时， 对应的 socket:shouldTimeout... 代理方法被调用，
+// 允许你去扩展代理超时。
+//
 // Upon a timeout, the "socket:didDisconnectWithError:" method is called
-// 
+// 超时后，调用 socket:didDisconnectWithError: 方法。
+//
 // The tag is for your convenience.
+// 标记是为了便利
+//
 // You can use it as an array index, step number, state id, pointer, etc.
+// 你可以使用 tag 作为数组索引，步骤号， 状态id, 指针
 
 /**
  * Reads the first available bytes that become available on the socket.
- * 
+ * 读取 socket 的第一个可用字节。
+ *
  * If the timeout value is negative, the read operation will not use a timeout.
+ * 如果设置超时未负值， 读操作将不使用超时
 **/
 - (void)readDataWithTimeout:(NSTimeInterval)timeout tag:(long)tag;
+
+
 
 /**
  * Reads the first available bytes that become available on the socket.
@@ -620,7 +676,10 @@ typedef NS_ENUM(NSInteger, GCDAsyncSocketError) {
  * For performance reasons, the socket will retain it, not copy it.
  * So if it is immutable, don't modify it while the socket is using it.
 **/
-- (void)readDataToData:(NSData *)data withTimeout:(NSTimeInterval)timeout maxLength:(NSUInteger)length tag:(long)tag;
+- (void)readDataToData:(NSData *)data
+           withTimeout:(NSTimeInterval)timeout
+             maxLength:(NSUInteger)length
+                   tag:(long)tag;
 
 /**
  * Reads bytes until (and including) the passed "data" parameter, which acts as a separator.
@@ -669,7 +728,9 @@ typedef NS_ENUM(NSInteger, GCDAsyncSocketError) {
  * Returns progress of the current read, from 0.0 to 1.0, or NaN if no current read (use isnan() to check).
  * The parameters "tag", "done" and "total" will be filled in if they aren't NULL.
 **/
-- (float)progressOfReadReturningTag:(nullable long *)tagPtr bytesDone:(nullable NSUInteger *)donePtr total:(nullable NSUInteger *)totalPtr;
+- (float)progressOfReadReturningTag:(nullable long *)tagPtr
+                          bytesDone:(nullable NSUInteger *)donePtr
+                              total:(nullable NSUInteger *)totalPtr;
 
 #pragma mark Writing   -- 写
 
@@ -690,13 +751,17 @@ typedef NS_ENUM(NSInteger, GCDAsyncSocketError) {
  * completes writing the bytes (which is NOT immediately after this method returns, but rather at a later time
  * when the delegate method notifies you), then you should first copy the bytes, and pass the copy to this method.
 **/
-- (void)writeData:(NSData *)data withTimeout:(NSTimeInterval)timeout tag:(long)tag;
+- (void)writeData:(NSData *)data
+      withTimeout:(NSTimeInterval)timeout
+              tag:(long)tag;
 
 /**
  * Returns progress of the current write, from 0.0 to 1.0, or NaN if no current write (use isnan() to check).
  * The parameters "tag", "done" and "total" will be filled in if they aren't NULL.
 **/
-- (float)progressOfWriteReturningTag:(nullable long *)tagPtr bytesDone:(nullable NSUInteger *)donePtr total:(nullable NSUInteger *)totalPtr;
+- (float)progressOfWriteReturningTag:(nullable long *)tagPtr
+                           bytesDone:(nullable NSUInteger *)donePtr
+                               total:(nullable NSUInteger *)totalPtr;
 
 #pragma mark Security
 

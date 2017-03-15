@@ -17,6 +17,8 @@ class ClientViewController: UIViewController {
     @IBOutlet weak var messageField: UITextField!
     
     
+    
+
     var messages:[String] = [] {
         didSet {
             DispatchQueue.main.async {
@@ -24,6 +26,8 @@ class ClientViewController: UIViewController {
             }
         }
     }
+    
+    
     let tag = 100
     var socket: GCDAsyncSocket?
     override func viewDidLoad() {
@@ -39,20 +43,22 @@ class ClientViewController: UIViewController {
         // 创建 socket
         socket = GCDAsyncSocket(delegate: self, delegateQueue: DispatchQueue.global())
     }
+    
 }
 
 
 // MARK: - 事件处理
 extension ClientViewController {
     
-    @IBAction func close(_ sender: Any) {
-        socket?.disconnect()
+    @IBAction func clean(_ sender: Any) {
+        messages.removeAll()
     }
-    
     
     @IBAction func send(_ sender: Any) {
         
         if messageField.text == nil || messageField.text == ""{
+         
+            print(#function,"\n --: desc: ", "发送的信息不能为空")
             return
         }
         
@@ -62,6 +68,13 @@ extension ClientViewController {
     }
     
     @IBAction func connect(_ sender: Any) {
+        
+        if socket!.isConnected {
+            
+            print(#function,"\n --: desc: ", "socket 已经连接！")
+            return
+        }
+        
         
         do {
             let port = UInt16((portField.text! as NSString).intValue)
@@ -76,16 +89,19 @@ extension ClientViewController {
     }
 }
 
+// MARK: GCDAsyncSocketDelegate
 extension ClientViewController : GCDAsyncSocketDelegate {
     
     func socketDidDisconnect(_ sock: GCDAsyncSocket, withError err: Error?) {
         print(#function,"\n --: sock: ", sock, "\n --: desc: ", "sock 断开连接", "\n --: Error:", err ?? "错误为 nil")
+         sock.readData(withTimeout: -1, tag: tag)
     }
     
     //  和服务器创建连接完成
     func socket(_ sock: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
         
         print(#function,"\n --: sock: ", sock, "\n --: desc: ", "sock 连接成功！", "\n --: host: ", host, "\n --: port: ", port)
+        sock.readData(withTimeout: -1, tag: tag)
         self.messages.append("连接主机成功！")
     }
     
@@ -93,8 +109,10 @@ extension ClientViewController : GCDAsyncSocketDelegate {
     func socket(_ sock: GCDAsyncSocket, didRead data: Data, withTag tag: Int) {
         
         let receiverStr = String(data: data, encoding: .utf8)
+        
         // 通知对方接受数据完成，可以进行下次的数据的接收
-        sock.write(data, withTimeout: -1, tag: tag)
+        sock.readData(withTimeout: -1, tag: tag)
+        
         self.messages.append(receiverStr!)
     }
     
@@ -103,7 +121,10 @@ extension ClientViewController : GCDAsyncSocketDelegate {
         
         // 数据发送完成后一定要调用下读数据的方法
         // 通知对方接收数据
-        sock.readData(withTimeout: -1, tag: tag)
+         sock.readData(withTimeout: -1, tag: tag)
+        
+        print(#function,"\n --: sock: ", sock, "\n --: desc: ", "sock 数据发送成功！", "\n --: tag: ", tag)
+
         
         DispatchQueue.main.async {
             self.messageField.text = nil

@@ -70,7 +70,11 @@
                                         <rect key="frame" x="0.0" y="28" width="343" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="3n8-kC-XVv" id="Gdo-SN-1zE">
+<<<<<<< Updated upstream
                                             <rect key="frame" x="0.0" y="0.0" width="343" height="43"/>
+=======
+                                            <rect key="frame" x="0.0" y="0.0" width="343" height="43.5"/>
+>>>>>>> Stashed changes
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -96,10 +100,9 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SCj-Gj-72v">
                                 <rect key="frame" x="204" y="151" width="168" height="30"/>
                                 <color key="backgroundColor" red="1" green="0.3661121114756738" blue="0.33065708946339745" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <state key="normal" title="断开连接"/>
+                                <state key="normal" title="清空信息"/>
                                 <connections>
-                                    <action selector="close:" destination="BYZ-38-t0r" eventType="touchUpInside" id="qSt-YB-AxN"/>
-                                    <action selector="connect:" destination="BYZ-38-t0r" eventType="touchUpInside" id="9wa-tC-54V"/>
+                                    <action selector="clean:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Fap-ew-bjy"/>
                                 </connections>
                             </button>
                         </subviews>
