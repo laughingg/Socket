@@ -13,7 +13,7 @@
         <!--Client-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ClientViewController" customModule="CocoaAsyncSocketClient" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ClientViewController" customModule="CocoaAsyncSocketDemo" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -70,7 +70,7 @@
                                         <rect key="frame" x="0.0" y="28" width="343" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="3n8-kC-XVv" id="Gdo-SN-1zE">
-                                            <rect key="frame" x="0.0" y="0.0" width="343" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="343" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -164,7 +164,7 @@
         <!--Service-->
         <scene sceneID="1BT-qT-1h3">
             <objects>
-                <viewController id="5YV-fJ-e2T" customClass="ServiceViewController" customModule="CocoaAsyncSocketClient" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="5YV-fJ-e2T" customClass="ServiceViewController" customModule="CocoaAsyncSocketDemo" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Ltr-um-cnq"/>
                         <viewControllerLayoutGuide type="bottom" id="7jc-P7-TNw"/>
@@ -217,6 +217,9 @@
                                 <rect key="frame" x="16" y="155" width="343" height="30"/>
                                 <color key="backgroundColor" red="0.82416956612414838" green="0.86711057586197549" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <state key="normal" title="清空消息"/>
+                                <connections>
+                                    <action selector="clearBtnClick:" destination="5YV-fJ-e2T" eventType="touchUpInside" id="7Dn-MU-QEz"/>
+                                </connections>
                             </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="p65-6H-zBa">
                                 <rect key="frame" x="16" y="201" width="343" height="417"/>
@@ -255,7 +258,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UXO-rH-5il" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1725.5999999999999" y="903.59820089955031"/>
+            <point key="canvasLocation" x="1726" y="777"/>
         </scene>
         <!--Item-->
         <scene sceneID="XSc-OQ-bW4">

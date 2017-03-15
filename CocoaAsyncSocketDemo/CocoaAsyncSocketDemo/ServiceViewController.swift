@@ -29,8 +29,16 @@ class ServiceViewController: UIViewController {
         if msgField.text?.characters.count == 0 {
             print(#function, "\n--: desc: ", "请输入你要发送的内容！")
         } else {
-            newServiceSocket?.write((msgField.text?.data(using: .utf8))!, withTimeout: 0, tag: 101)
+            
+            let msgData =  ("Client(\(tag)):" + msgField.text!).data(using: .utf8)
+            newServiceSocket!.write(msgData!, withTimeout: -1, tag: tag)
         }
+    }
+    
+    
+    
+    @IBAction func clearBtnClick(_ sender: Any) {
+        msgs.removeAll()
     }
     
     @IBAction func startListenPort(_ sender: Any) {
@@ -47,6 +55,7 @@ class ServiceViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     
+    let tag = 101;
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -93,7 +102,11 @@ extension ServiceViewController : GCDAsyncSocketDelegate {
         print(#function, "\n--: socket: ", sock, "\n--: desc: ", "有新的 sock 连接！", "\n--: newSocket: ", newSocket)
         
         newServiceSocket = newSocket
-        newSocket.readData(withTimeout: -1, tag: 101)
+        
+        newSocket.write("1234567890".data(using: .utf8)!, withTimeout: -1, tag: tag)
+        
+        // 准备开始接收数据
+        newSocket.readData(withTimeout: -1, tag: tag)
     }
     
     
@@ -103,13 +116,19 @@ extension ServiceViewController : GCDAsyncSocketDelegate {
         let receiverStr = String(data: data, encoding: .utf8)
         msgs.append(receiverStr!)
 
+
+          sock.readData(withTimeout: -1, tag: tag)
+        
+    
         print(#function, "\n--: socket: ", sock, "\n--: desc: ", "数据接收完成", "\n--: dataStr: ", receiverStr!, "\n--: tag: ", tag )
+        
+    
     }
     
     
     // 数据发送成功
     func socket(_ sock: GCDAsyncSocket, didWriteDataWithTag tag: Int) {
-        
+//        sock.readData(withTimeout: -1, tag: tag)
         
     }
     
